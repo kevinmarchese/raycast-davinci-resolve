@@ -72,33 +72,54 @@ type Modifier = "command" | "shift" | "option" | "control";
 
 ### Command Dispatch (AppleScript)
 
-The core mechanism uses Raycast's built-in `runAppleScript` to send keystrokes to DaVinci Resolve via macOS System Events:
+The core mechanism uses `osascript` via `child_process.execSync` to send keystrokes to DaVinci Resolve via macOS System Events.
+
+**Critical implementation notes:**
+
+1. **`closeMainWindow()` must be called before sending the shortcut.** Raycast's window captures keystrokes if it's still open, preventing them from reaching DaVinci Resolve.
+2. **The System Events process name is `"Resolve"`**, not `"DaVinci Resolve"`. The `activate` approach (`tell application "DaVinci Resolve" to activate`) does not reliably bring Resolve to the foreground for keystroke delivery. Instead, use `set frontmost of process "Resolve" to true`.
+3. **Keystrokes must be sent at the top-level System Events scope**, not inside a `tell process "Resolve"` block. Sending them to the frontmost app via System Events directly is what works.
+4. **`runAppleScript` from `@raycast/utils` does not reliably deliver keystrokes** to other apps when called from a Raycast extension. Use `child_process.execSync` with `osascript` instead.
+5. **Special keys** (F-keys, arrows, Space, Home, End, Delete, etc.) require `key code` instead of `keystroke`.
 
 ```typescript
-import { runAppleScript } from "@raycast/utils";
+import { execSync } from "child_process";
 
 async function sendShortcut(shortcut: Shortcut): Promise<void> {
-  const modifierStr = (shortcut.modifiers || [])
-    .map(m => {
-      switch(m) {
-        case "command": return "command down";
-        case "shift": return "shift down";
-        case "option": return "option down";
-        case "control": return "control down";
-      }
-    })
-    .join(", ");
+  // Build modifier clause
+  const usingClause = buildModifierClause(shortcut.modifiers);
 
-  const usingClause = modifierStr ? ` using {${modifierStr}}` : "";
+  // Use key code for special keys, keystroke for regular characters
+  let keystrokeCommand: string;
+  if (isSpecialKey(shortcut.key)) {
+    const code = KEY_CODES[shortcut.key.toLowerCase()];
+    keystrokeCommand = `key code ${code}${usingClause}`;
+  } else {
+    keystrokeCommand = `keystroke "${shortcut.key}"${usingClause}`;
+  }
 
-  await runAppleScript(`
-    tell application "DaVinci Resolve" to activate
-    delay 0.3
+  const script = `
     tell application "System Events"
-      keystroke "${shortcut.key}"${usingClause}
+      set frontmost of process "Resolve" to true
     end tell
-  `);
+    delay 0.5
+    tell application "System Events"
+      ${keystrokeCommand}
+    end tell
+  `;
+
+  const escaped = script.replace(/'/g, "'\\''");
+  execSync(`osascript -e '${escaped}'`, { timeout: 10000 });
 }
+```
+
+**In the action handler (index.tsx):**
+```typescript
+onAction={async () => {
+  await closeMainWindow();  // MUST close Raycast window first
+  await sendShortcut(cmd.shortcut);
+  await showHUD(`Sent: ${cmd.name}`);
+}}
 ```
 
 ### Command Categories & Initial Command Set

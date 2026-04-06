@@ -1,0 +1,121 @@
+import { ResolveCommand } from "./types";
+
+export const commands: ResolveCommand[] = [
+  // ─── General ──────────────────────────────────────────────
+  { id: "general-undo", name: "Undo", category: "General", shortcut: { key: "z", modifiers: ["command"] } },
+  { id: "general-redo", name: "Redo", category: "General", shortcut: { key: "z", modifiers: ["command", "shift"] } },
+  { id: "general-save", name: "Save Project", category: "General", shortcut: { key: "s", modifiers: ["command"] } },
+  { id: "general-save-as", name: "Save Project As", category: "General", shortcut: { key: "s", modifiers: ["command", "shift"] } },
+  { id: "general-project-settings", name: "Project Settings", category: "General", shortcut: { key: "9", modifiers: ["shift"] } },
+  { id: "general-keyboard-customization", name: "Keyboard Customization", category: "General", shortcut: { key: "k", modifiers: ["command", "option"] } },
+  { id: "general-fullscreen", name: "Toggle Fullscreen", category: "General", shortcut: { key: "f", modifiers: ["command"] } },
+  { id: "general-preferences", name: "Preferences", category: "General", shortcut: { key: ",", modifiers: ["command"] } },
+  { id: "general-new-timeline", name: "New Timeline", category: "General", shortcut: { key: "n", modifiers: ["command"] } },
+  { id: "general-new-bin", name: "New Bin", category: "General", shortcut: { key: "n", modifiers: ["command", "shift"] } },
+
+  // ─── Navigation ───────────────────────────────────────────
+  { id: "nav-go-to-start", name: "Go to Start", category: "Navigation", shortcut: { key: "home" } },
+  { id: "nav-go-to-end", name: "Go to End", category: "Navigation", shortcut: { key: "end" } },
+  { id: "nav-previous-edit", name: "Previous Edit Point", category: "Navigation", shortcut: { key: "up" } },
+  { id: "nav-next-edit", name: "Next Edit Point", category: "Navigation", shortcut: { key: "down" } },
+  { id: "nav-previous-clip", name: "Previous Clip", category: "Navigation", shortcut: { key: "up", modifiers: ["shift"] } },
+  { id: "nav-next-clip", name: "Next Clip", category: "Navigation", shortcut: { key: "down", modifiers: ["shift"] } },
+  { id: "nav-one-frame-forward", name: "One Frame Forward", category: "Navigation", shortcut: { key: "right" } },
+  { id: "nav-one-frame-back", name: "One Frame Back", category: "Navigation", shortcut: { key: "left" } },
+  { id: "nav-one-second-forward", name: "One Second Forward", category: "Navigation", shortcut: { key: "right", modifiers: ["shift"] } },
+  { id: "nav-one-second-back", name: "One Second Back", category: "Navigation", shortcut: { key: "left", modifiers: ["shift"] } },
+  { id: "nav-switch-media-pool", name: "Switch to Media Pool", category: "Navigation", shortcut: { key: "1", modifiers: ["shift"] } },
+  { id: "nav-switch-cut", name: "Switch to Cut Page", category: "Navigation", shortcut: { key: "2", modifiers: ["shift"] } },
+  { id: "nav-switch-edit", name: "Switch to Edit Page", category: "Navigation", shortcut: { key: "3", modifiers: ["shift"] } },
+  { id: "nav-switch-fusion", name: "Switch to Fusion Page", category: "Navigation", shortcut: { key: "4", modifiers: ["shift"] } },
+  { id: "nav-switch-color", name: "Switch to Color Page", category: "Navigation", shortcut: { key: "5", modifiers: ["shift"] } },
+  { id: "nav-switch-fairlight", name: "Switch to Fairlight Page", category: "Navigation", shortcut: { key: "6", modifiers: ["shift"] } },
+  { id: "nav-switch-deliver", name: "Switch to Deliver Page", category: "Navigation", shortcut: { key: "7", modifiers: ["shift"] } },
+
+  // ─── Playback ─────────────────────────────────────────────
+  { id: "play-stop", name: "Play/Stop", category: "Playback", shortcut: { key: "space" } },
+  { id: "play-reverse", name: "Play Reverse", category: "Playback", shortcut: { key: "j" } },
+  { id: "play-stop-k", name: "Stop", category: "Playback", shortcut: { key: "k" } },
+  { id: "play-forward", name: "Play Forward", category: "Playback", shortcut: { key: "l" } },
+  { id: "play-slow-forward", name: "Slow Forward", category: "Playback", shortcut: { key: "l", modifiers: ["shift"] } },
+  { id: "play-slow-reverse", name: "Slow Reverse", category: "Playback", shortcut: { key: "j", modifiers: ["shift"] } },
+  { id: "play-loop", name: "Loop Playback", category: "Playback", shortcut: { key: "/", modifiers: ["command"] } },
+  { id: "play-around-current", name: "Play Around Current", category: "Playback", shortcut: { key: "/" } },
+  { id: "play-in-to-out", name: "Play In to Out", category: "Playback", shortcut: { key: "/", modifiers: ["option"] } },
+
+  // ─── Timeline ─────────────────────────────────────────────
+  { id: "timeline-blade", name: "Blade Tool", category: "Timeline", shortcut: { key: "b" } },
+  { id: "timeline-selection", name: "Selection Mode", category: "Timeline", shortcut: { key: "a" } },
+  { id: "timeline-trim", name: "Trim Mode", category: "Timeline", shortcut: { key: "t" } },
+  { id: "timeline-dynamic-trim", name: "Dynamic Trim Mode", category: "Timeline", shortcut: { key: "w" } },
+  { id: "timeline-snapping", name: "Toggle Snapping", category: "Timeline", shortcut: { key: "n" } },
+  { id: "timeline-linked-selection", name: "Linked Selection", category: "Timeline", shortcut: { key: "l", modifiers: ["command", "shift"] } },
+  { id: "timeline-zoom-in", name: "Zoom In Timeline", category: "Timeline", shortcut: { key: "=", modifiers: ["command"] } },
+  { id: "timeline-zoom-out", name: "Zoom Out Timeline", category: "Timeline", shortcut: { key: "-", modifiers: ["command"] } },
+  { id: "timeline-zoom-fit", name: "Zoom to Fit", category: "Timeline", shortcut: { key: "z", modifiers: ["shift"] } },
+  { id: "timeline-enable-clip", name: "Enable/Disable Clip", category: "Timeline", shortcut: { key: "d" } },
+  { id: "timeline-razor", name: "Split Clip", category: "Timeline", shortcut: { key: "b", modifiers: ["command"] } },
+  { id: "timeline-match-frame", name: "Match Frame", category: "Timeline", shortcut: { key: "f" } },
+  { id: "timeline-closest-edit", name: "Select Closest Edit Point", category: "Timeline", shortcut: { key: "v" } },
+
+  // ─── Edit ─────────────────────────────────────────────────
+  { id: "edit-ripple-delete", name: "Ripple Delete", category: "Edit", shortcut: { key: "delete" } },
+  { id: "edit-cut", name: "Cut", category: "Edit", shortcut: { key: "x", modifiers: ["command"] } },
+  { id: "edit-copy", name: "Copy", category: "Edit", shortcut: { key: "c", modifiers: ["command"] } },
+  { id: "edit-paste", name: "Paste", category: "Edit", shortcut: { key: "v", modifiers: ["command"] } },
+  { id: "edit-select-all", name: "Select All", category: "Edit", shortcut: { key: "a", modifiers: ["command"] } },
+  { id: "edit-deselect-all", name: "Deselect All", category: "Edit", shortcut: { key: "a", modifiers: ["command", "shift"] } },
+  { id: "edit-insert", name: "Insert Clip", category: "Edit", shortcut: { key: "f9" } },
+  { id: "edit-overwrite", name: "Overwrite Clip", category: "Edit", shortcut: { key: "f10" } },
+  { id: "edit-replace", name: "Replace Clip", category: "Edit", shortcut: { key: "f11" } },
+  { id: "edit-fit-to-fill", name: "Fit to Fill", category: "Edit", shortcut: { key: "f11", modifiers: ["shift"] } },
+  { id: "edit-place-on-top", name: "Place on Top", category: "Edit", shortcut: { key: "f12" } },
+  { id: "edit-append-to-end", name: "Append to End of Timeline", category: "Edit", shortcut: { key: "f12", modifiers: ["shift"] } },
+  { id: "edit-delete", name: "Delete Selected", category: "Edit", shortcut: { key: "delete", modifiers: ["command"] } },
+  { id: "edit-nudge-left", name: "Nudge Clip Left (1 Frame)", category: "Edit", shortcut: { key: "," } },
+  { id: "edit-nudge-right", name: "Nudge Clip Right (1 Frame)", category: "Edit", shortcut: { key: "." } },
+  { id: "edit-nudge-left-5", name: "Nudge Clip Left (5 Frames)", category: "Edit", shortcut: { key: ",", modifiers: ["shift"] } },
+  { id: "edit-nudge-right-5", name: "Nudge Clip Right (5 Frames)", category: "Edit", shortcut: { key: ".", modifiers: ["shift"] } },
+
+  // ─── Color ────────────────────────────────────────────────
+  { id: "color-add-serial-node", name: "Add Serial Node", category: "Color", shortcut: { key: "s", modifiers: ["option"] } },
+  { id: "color-add-parallel-node", name: "Add Parallel Node", category: "Color", shortcut: { key: "p", modifiers: ["option"] } },
+  { id: "color-add-layer-node", name: "Add Layer Node", category: "Color", shortcut: { key: "l", modifiers: ["option"] } },
+  { id: "color-reset-node", name: "Reset Node Grades", category: "Color", shortcut: { key: "home", modifiers: ["command"] } },
+  { id: "color-enable-disable-node", name: "Enable/Disable Node", category: "Color", shortcut: { key: "d", modifiers: ["command"] } },
+  { id: "color-viewer-lut", name: "Toggle Viewer LUT", category: "Color", shortcut: { key: "t", modifiers: ["command", "shift"] } },
+  { id: "color-grab-still", name: "Grab Still", category: "Color", shortcut: { key: "g", modifiers: ["command", "option"] } },
+  { id: "color-apply-grade", name: "Apply Grade from Previous Clip", category: "Color", shortcut: { key: "=", modifiers: ["option"] } },
+  { id: "color-next-node", name: "Next Node", category: "Color", shortcut: { key: ";", modifiers: ["option", "shift"] } },
+  { id: "color-prev-node", name: "Previous Node", category: "Color", shortcut: { key: "'", modifiers: ["option", "shift"] } },
+  { id: "color-bypass-grades", name: "Bypass All Grades", category: "Color", shortcut: { key: "d", modifiers: ["shift"] } },
+  { id: "color-highlight", name: "Toggle Highlight Mode", category: "Color", shortcut: { key: "h", modifiers: ["shift"] } },
+  { id: "color-reset-all", name: "Reset All Grades", category: "Color", shortcut: { key: "home", modifiers: ["command", "shift"] } },
+
+  // ─── Markers ──────────────────────────────────────────────
+  { id: "markers-add", name: "Add Marker", category: "Markers", shortcut: { key: "m" } },
+  { id: "markers-modify", name: "Modify Marker", category: "Markers", shortcut: { key: "m", modifiers: ["shift"] } },
+  { id: "markers-clear", name: "Clear Marker", category: "Markers", shortcut: { key: "m", modifiers: ["option"] } },
+  { id: "markers-mark-in", name: "Mark In", category: "Markers", shortcut: { key: "i" } },
+  { id: "markers-mark-out", name: "Mark Out", category: "Markers", shortcut: { key: "o" } },
+  { id: "markers-clear-in", name: "Clear In Point", category: "Markers", shortcut: { key: "i", modifiers: ["option"] } },
+  { id: "markers-clear-out", name: "Clear Out Point", category: "Markers", shortcut: { key: "o", modifiers: ["option"] } },
+  { id: "markers-clear-both", name: "Clear In and Out", category: "Markers", shortcut: { key: "x", modifiers: ["option"] } },
+  { id: "markers-mark-clip", name: "Mark Clip", category: "Markers", shortcut: { key: "x" } },
+
+  // ─── Fairlight ────────────────────────────────────────────
+  { id: "fairlight-mixer", name: "Toggle Mixer", category: "Fairlight", shortcut: { key: "m", modifiers: ["command", "shift"] } },
+  { id: "fairlight-normalize", name: "Normalize Audio Levels", category: "Fairlight", shortcut: { key: "n", modifiers: ["command", "shift"] } },
+  { id: "fairlight-bounce-mix", name: "Bounce Mix to Track", category: "Fairlight", shortcut: { key: "b", modifiers: ["command", "shift"] } },
+  { id: "fairlight-record", name: "Record", category: "Fairlight", shortcut: { key: "r", modifiers: ["command", "shift"] } },
+
+  // ─── Fusion ───────────────────────────────────────────────
+  { id: "fusion-add-tool", name: "Add Tool", category: "Fusion", shortcut: { key: "space", modifiers: ["shift"] } },
+  { id: "fusion-select-tool", name: "Select Tool", category: "Fusion", shortcut: { key: "t", modifiers: ["command"] } },
+  { id: "fusion-merge-node", name: "Add Merge Node", category: "Fusion", shortcut: { key: "m", modifiers: ["command"] } },
+  { id: "fusion-render", name: "Render", category: "Fusion", shortcut: { key: "r", modifiers: ["command"] } },
+
+  // ─── Deliver ──────────────────────────────────────────────
+  { id: "deliver-add-to-queue", name: "Add to Render Queue", category: "Deliver", shortcut: { key: "r", modifiers: ["command", "shift"] } },
+  { id: "deliver-start-render", name: "Start Render", category: "Deliver", shortcut: { key: "return", modifiers: ["command", "shift"] } },
+];

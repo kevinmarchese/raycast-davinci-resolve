@@ -1,0 +1,103 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "davinci-resolve-commander",
+  "title": "DaVinci Resolve Commander",
+  "description": "Searchable command palette for DaVinci Resolve — browse and execute 90+ keyboard shortcuts instantly",
+  "icon": "extension-icon.png",
+  "author": "kevinmarchese",
+  "categories": ["Applications", "Productivity"],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "index",
+      "title": "DaVinci Resolve Commands",
+      "description": "Search and execute DaVinci Resolve commands",
+      "mode": "view"
+    },
+    {
+      "name": "set-zoom",
+      "title": "Zoom",
+      "description": "Set zoom level on the selected DaVinci Resolve clip",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "value",
+          "type": "text",
+          "placeholder": "e.g. 1.08",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "set-pan",
+      "title": "Pan",
+      "description": "Set pan position on the selected DaVinci Resolve clip",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "x",
+          "type": "text",
+          "placeholder": "Pan X",
+          "required": false
+        },
+        {
+          "name": "y",
+          "type": "text",
+          "placeholder": "Pan Y",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "set-rotation",
+      "title": "Rotation",
+      "description": "Set rotation angle on the selected DaVinci Resolve clip",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "angle",
+          "type": "text",
+          "placeholder": "e.g. 45",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "set-opacity",
+      "title": "Opacity",
+      "description": "Set opacity on the selected DaVinci Resolve clip",
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "value",
+          "type": "text",
+          "placeholder": "e.g. 80",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "effects",
+      "title": "Effects",
+      "description": "Browse and apply effects, titles, and generators to DaVinci Resolve clips",
+      "mode": "view"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.68.0",
+    "@raycast/utils": "^1.12.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^1.0.8",
+    "@types/node": "20.8.10",
+    "@types/react": "18.2.27",
+    "eslint": "^8.51.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "lint": "ray lint"
+  }
+}
