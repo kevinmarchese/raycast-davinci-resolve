@@ -75,12 +75,6 @@
           "required": true
         }
       ]
-    },
-    {
-      "name": "effects",
-      "title": "Effects",
-      "description": "Browse and apply effects, titles, and generators to DaVinci Resolve clips",
-      "mode": "view"
     }
   ],
   "dependencies": {

@@ -23,8 +23,6 @@ declare namespace Preferences {
   export type SetRotation = ExtensionPreferences & {}
   /** Preferences accessible in the `set-opacity` command */
   export type SetOpacity = ExtensionPreferences & {}
-  /** Preferences accessible in the `effects` command */
-  export type Effects = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
@@ -52,7 +50,5 @@ declare namespace Arguments {
   /** e.g. 80 */
   "value": string
 }
-  /** Arguments passed to the `effects` command */
-  export type Effects = {}
 }
 

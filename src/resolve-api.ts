@@ -54,6 +54,130 @@ function runWithTimeline(script: string): string {
   return execPython(`${PREAMBLE_TIMELINE}\n${script}`);
 }
 
+// ─── Timeline state detection ───────────────────────────────
+
+export interface ClipInfo {
+  name: string;
+  duration: number;
+  clipColor: string;
+  enabled: boolean;
+  trackType: string;
+  trackIndex: number;
+  zoomX: number;
+  zoomY: number;
+  pan: number;
+  tilt: number;
+  rotation: number;
+  opacity: number;
+  compositeMode: number;
+}
+
+export interface TimelineState {
+  connected: boolean;
+  page: string;
+  projectName: string;
+  timelineName: string;
+  clip: ClipInfo | null;
+}
+
+export function getTimelineState(): TimelineState {
+  try {
+    const result = execPython(`
+import sys, json
+sys.path.append('${RESOLVE_SCRIPT_MODULES}')
+import DaVinciResolveScript as bmd
+
+resolve = bmd.scriptapp('Resolve')
+if not resolve:
+    print(json.dumps({"connected": False}))
+    sys.exit(0)
+
+page = resolve.GetCurrentPage() or ""
+pm = resolve.GetProjectManager()
+proj = pm.GetCurrentProject()
+proj_name = proj.GetName() if proj else ""
+tl = proj.GetCurrentTimeline() if proj else None
+tl_name = tl.GetName() if tl else ""
+
+clip_info = None
+if tl:
+    item = tl.GetCurrentVideoItem()
+    if item:
+        props = item.GetProperty()
+        track = item.GetTrackTypeAndIndex()
+        clip_info = {
+            "name": item.GetName(),
+            "duration": item.GetDuration(),
+            "clipColor": item.GetClipColor() or "",
+            "enabled": item.GetClipEnabled(),
+            "trackType": track[0],
+            "trackIndex": track[1],
+            "zoomX": props.get("ZoomX", 1.0),
+            "zoomY": props.get("ZoomY", 1.0),
+            "pan": props.get("Pan", 0.0),
+            "tilt": props.get("Tilt", 0.0),
+            "rotation": props.get("RotationAngle", 0.0),
+            "opacity": props.get("Opacity", 100.0),
+            "compositeMode": props.get("CompositeMode", 0),
+        }
+
+state = {
+    "connected": True,
+    "page": page,
+    "projectName": proj_name,
+    "timelineName": tl_name,
+    "clip": clip_info,
+}
+print(json.dumps(state))
+`);
+    return JSON.parse(result);
+  } catch {
+    return {
+      connected: false,
+      page: "",
+      projectName: "",
+      timelineName: "",
+      clip: null,
+    };
+  }
+}
+
+// ─── Clip operations (require selected clip) ────────────────
+
+export function setClipColor(color: string): void {
+  const result = runWithClip(`
+result = item.SetClipColor('${color}')
+if not result:
+    print('ERROR:Failed to set clip color')
+    sys.exit(1)
+print('OK')
+`);
+  if (result !== "OK") {
+    throw new Error("Failed to set clip color");
+  }
+}
+
+export function clearClipColor(): void {
+  runWithClip(`
+item.ClearClipColor()
+print('OK')
+`);
+}
+
+export function setClipEnabled(enabled: boolean): void {
+  const pyVal = enabled ? "True" : "False";
+  const result = runWithClip(`
+result = item.SetClipEnabled(${pyVal})
+if not result:
+    print('ERROR:Failed to set clip enabled')
+    sys.exit(1)
+print('OK')
+`);
+  if (result !== "OK") {
+    throw new Error("Failed to set clip enabled");
+  }
+}
+
 // ─── Property getters/setters (require selected clip) ───────
 
 export function getProperty(key: string): string {
@@ -95,123 +219,3 @@ export function getCurrentClipName(): string {
   return runWithClip("print(item.GetName())");
 }
 
-// ─── Fusion effects (require selected clip) ─────────────────
-
-export function addFusionEffect(toolId: string, toolSettings?: Record<string, string>): void {
-  const settingsCode = toolSettings
-    ? Object.entries(toolSettings)
-        .map(([k, v]) => `tool['${k}'] = ${v}`)
-        .join("\n")
-    : "";
-
-  const result = runWithClip(`
-# Check for existing Fusion comp or create one
-comp_count = item.GetFusionCompCount()
-if comp_count > 0:
-    comp = item.GetFusionCompByIndex(1)
-else:
-    comp = item.AddFusionComp()
-
-if not comp:
-    print('ERROR:Could not create Fusion composition')
-    sys.exit(1)
-
-# Add the tool
-tool = comp.AddTool('${toolId}', -32768, -32768)
-if not tool:
-    print('ERROR:Could not add ${toolId}')
-    sys.exit(1)
-
-${settingsCode}
-
-# Wire it: find MediaIn and MediaOut, insert tool between them
-media_in = comp.FindTool('MediaIn1')
-media_out = comp.FindTool('MediaOut1')
-
-if media_in and media_out:
-    # Find what's currently connected to MediaOut
-    # Disconnect and rewire: ... -> tool -> MediaOut
-    tool.Input.ConnectTo(media_in.Output)
-    media_out.Input.ConnectTo(tool.Output)
-
-print('OK')
-`);
-  if (result !== "OK") {
-    throw new Error(`Failed to add effect ${toolId}`);
-  }
-}
-
-// ─── Title/generator insertion (requires timeline only) ─────
-
-export function insertTitleOnTop(titleName: string): void {
-  const result = runWithTimeline(`
-video_tracks = tl.GetTrackCount('video')
-audio_tracks = tl.GetTrackCount('audio')
-
-# Save original lock state
-video_was_locked = {i: tl.GetIsTrackLocked('video', i) for i in range(1, video_tracks + 1)}
-audio_was_locked = {i: tl.GetIsTrackLocked('audio', i) for i in range(1, audio_tracks + 1)}
-
-# Lock all tracks except top video track
-for i in range(1, video_tracks + 1):
-    tl.SetTrackLock('video', i, True)
-for i in range(1, audio_tracks + 1):
-    tl.SetTrackLock('audio', i, True)
-tl.SetTrackLock('video', video_tracks, False)
-
-time.sleep(0.3)
-
-# Insert title
-result = tl.InsertFusionTitleIntoTimeline('${titleName}')
-
-# Restore lock state
-for i in range(1, video_tracks + 1):
-    tl.SetTrackLock('video', i, video_was_locked[i])
-for i in range(1, audio_tracks + 1):
-    tl.SetTrackLock('audio', i, audio_was_locked[i])
-
-if not result:
-    print('ERROR:Failed to insert ${titleName}')
-    sys.exit(1)
-
-info = result.GetTrackTypeAndIndex()
-print(f'OK:Placed on {info[0]} track {info[1]}')
-`);
-  if (!result.startsWith("OK")) {
-    throw new Error(`Failed to insert ${titleName}`);
-  }
-}
-
-export function insertGeneratorOnTop(generatorName: string): void {
-  const result = runWithTimeline(`
-video_tracks = tl.GetTrackCount('video')
-audio_tracks = tl.GetTrackCount('audio')
-
-video_was_locked = {i: tl.GetIsTrackLocked('video', i) for i in range(1, video_tracks + 1)}
-audio_was_locked = {i: tl.GetIsTrackLocked('audio', i) for i in range(1, audio_tracks + 1)}
-
-for i in range(1, video_tracks + 1):
-    tl.SetTrackLock('video', i, True)
-for i in range(1, audio_tracks + 1):
-    tl.SetTrackLock('audio', i, True)
-tl.SetTrackLock('video', video_tracks, False)
-
-time.sleep(0.3)
-
-result = tl.InsertFusionGeneratorIntoTimeline('${generatorName}')
-
-for i in range(1, video_tracks + 1):
-    tl.SetTrackLock('video', i, video_was_locked[i])
-for i in range(1, audio_tracks + 1):
-    tl.SetTrackLock('audio', i, audio_was_locked[i])
-
-if not result:
-    print('ERROR:Failed to insert ${generatorName}')
-    sys.exit(1)
-
-print('OK')
-`);
-  if (result !== "OK") {
-    throw new Error(`Failed to insert ${generatorName}`);
-  }
-}
